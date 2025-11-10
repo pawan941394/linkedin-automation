@@ -234,7 +234,7 @@ git init
 git add .
 git commit -m "feat: initial LinkedIn automation toolkit"
 git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/linkedin-automation.git
+git remote add origin https://github.com/pawan941394/linkedin-automation.git
 git push -u origin main
 ```
 
