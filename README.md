@@ -1,31 +1,30 @@
 <div align="center">
 
-<!-- Animated gradient banner -->
-<img src="https://raw.githubusercontent.com/USER/REPO/main/assets/banner.gif" alt="LinkedIn Automation" width="100%" style="border-radius:12px;" />
-
-<!-- Fallback ASCII if GIF not available -->
-
-```
-██╗     ██╗███╗   ██╗██╗  ██╗██╗██████╗ ███████╗███╗   ██╗
-██║     ██║████╗  ██║██║ ██╔╝██║██╔══██╗██╔════╝████╗  ██║
-██║     ██║██╔██╗ ██║█████╔╝ ██║██████╔╝█████╗  ██╔██╗ ██║
-██║     ██║██║╚██╗██║██╔═██╗ ██║██╔══██╗██╔══╝  ██║╚██╗██║
-███████╗██║██║ ╚████║██║  ██╗██║██║  ██║███████╗██║ ╚████║
-╚══════╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝  AUTOMATION + AI + SCHEDULER
-```
-
-<h3>⚡ AI‑Powered LinkedIn Content + Image Generation + Multi‑Mode Scheduler + Web Dashboard</h3>
+<h1>LinkedIn Automation</h1>
+<em>Automation • AI • Scheduler • Web Dashboard</em>
 
 <p>
-<img src="https://img.shields.io/badge/Python-3.11+-blue?style=for-the-badge" />
-<img src="https://img.shields.io/badge/Django-5.x-092E20?style=for-the-badge" />
-<img src="https://img.shields.io/badge/OpenAI-API-412991?style=for-the-badge" />
-<img src="https://img.shields.io/badge/LinkedIn-REST_API-0077B5?style=for-the-badge" />
-<img src="https://img.shields.io/badge/Scheduler-APScheduler-orange?style=for-the-badge" />
+  <a href="https://github.com/pawan941394/linkedin-automation/actions/workflows/ci.yml">
+    <img alt="CI" src="https://github.com/pawan941394/linkedin-automation/actions/workflows/ci.yml/badge.svg" />
+  </a>
+  <img src="https://img.shields.io/badge/Python-3.11+-blue?style=flat-square" />
+  <img src="https://img.shields.io/badge/Django-5.x-092E20?style=flat-square" />
+  <img src="https://img.shields.io/badge/OpenAI-API-412991?style=flat-square" />
+  <img src="https://img.shields.io/badge/LinkedIn-REST_API-0077B5?style=flat-square" />
+  <img src="https://img.shields.io/badge/Scheduler-APScheduler-orange?style=flat-square" />
 </p>
 
-<!-- Animated typing effect (replace with real GIF/SVG you create) -->
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=24&pause=1200&color=7C77C6&center=true&vCenter=true&width=900&lines=Automate+your+LinkedIn+growth;Generate+professional+posts+with+AI;Create+images+via+DALL-E+3;Schedule+via+CLI+or+Web+Dashboard;Zero+cron+setup+needed!" alt="Typing Animation" />
+<!-- Subtle animated typing line (no repo assets required) -->
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1400&color=7C77C6&center=true&vCenter=true&width=880&lines=Automate+your+LinkedIn+growth;Generate+professional+posts+with+AI;Create+images+via+DALL-E+3;Schedule+from+CLI+or+Web+Dashboard" alt="Typing Animation" />
+
+<p>
+  <a href="https://www.linkedin.com/in/pawan941394/">
+    <img alt="LinkedIn" src="https://img.shields.io/badge/LinkedIn-Connect-0077B5?logo=linkedin&logoColor=white" />
+  </a>
+  <a href="https://www.youtube.com/@Pawankumar-py4tk">
+    <img alt="YouTube" src="https://img.shields.io/badge/YouTube-Subscribe-FF0000?logo=youtube&logoColor=white" />
+  </a>
+</p>
 
 </div>
 
@@ -247,10 +246,14 @@ Use responsibly. Comply with LinkedIn Platform Terms. Excessive automation may v
 ## ❤️ Contributing
 PRs welcome. Open an issue for bugs or feature ideas.
 
-## ⭐ Support
-If this helps your workflow, star the repo & share!
+## 🤝 Connect & Support
+- Connect: <a href="https://www.linkedin.com/in/pawan941394/">LinkedIn @pawan941394</a>
+- Subscribe: <a href="https://www.youtube.com/@Pawankumar-py4tk">YouTube @Pawankumar-py4tk</a>
+- If this helped, ⭐ star the repo and share!
 
 ---
 <div align="center">
 Made with 💡, ⚙️ & ☕ — Automate your professional presence.
+<br/>
+<a href="https://www.linkedin.com/in/pawan941394/">LinkedIn</a> • <a href="https://www.youtube.com/@Pawankumar-py4tk">YouTube</a>
 </div>
