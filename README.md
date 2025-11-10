@@ -28,21 +28,6 @@
 
 </div>
 
----
-
-## 🚀 What Is This?
-A complete LinkedIn automation toolkit:
-- 🤖 `ContentGenerator` uses OpenAI Chat + optional DALL‑E 3 image generation
-- 🏷️ Smart hashtag generation + graceful fallbacks
-- 🖼️ Auto image download & local asset management
-- 🔗 Robust `LinkedInPoster` with Posts API + UGC fallback logic
-- 🕒 Two scheduling modes:
-  - CLI custom scheduling (`schedule_post.py` / `custom_scheduler.py`)
-  - Live Django dashboard with animated UI and REST helpers
-- 🔄 Background reload of newly added posts (file‑based queue + dynamic job injection)
-- 🗃 History tracking: scheduled / completed / failed / expired
-- ✨ Web UI: particle background, live clock, quick buttons (Now / +1h / Tomorrow / Next Week)
-
 
 ## Demo 
 
@@ -53,222 +38,168 @@ A complete LinkedIn automation toolkit:
 ## 2.
 <img width="1111" height="882" alt="2" src="https://github.com/user-attachments/assets/2854d808-a828-4d03-838e-4fc04a054591" />
 
-## 3.
-<img width="732" height="506" alt="3" src="https://github.com/user-attachments/assets/f73f2460-902b-4e7c-81ef-dbe66a8c8e0b" />
 
+# LinkedIn Automation Tool 🤖
 
+An intelligent LinkedIn automation tool that generates and posts professional content automatically using AI and LinkedIn API.
 
-## 🧠 Core Architecture
+## 📁 Project Structure
+
 ```
-main.py ──► selects mode (test | post-now | schedule)
-           │
-           ├─► ContentGenerator (OpenAI text + optional image)
-           │        └─ fallback content / hashtag strategies
-           │
-           ├─► LinkedInPoster (Posts API → fallback to UGC)
-           │        └─ multi-step image upload register + PUT binary
-           │
-           └─► CustomPostScheduler (APScheduler BackgroundScheduler)
-                    ├─ JSON persistence (scheduled_posts.json)
-                    ├─ Auto reload loop (mtime watching)
-                    ├─ Status transitions: scheduled → completed/failed/expired
-                    └─ Web dashboard integrates via direct file + subprocess
-```
-
-## 📂 Project Layout (simplified)
-```
-/README.md
-/.env                      # Your secrets (NOT committed)
-/config.json               # Content + image config
-/main.py                   # Entry CLI interface
-/content_generator.py      # AI text + image logic
-/linkedin_poster.py        # Posts / UGC API posting
-/custom_scheduler.py       # Background scheduler + persistence
-/schedule_post.py          # Rich CLI for add/list/start/cancel
-/scheduled_posts.json      # Queue + history (auto-created)
-/linkedin_Scheduler/       # Django project
-  /posts/                  # Web dashboard app
-    templates/home.html    # Animated UI
-    static/base.css        # Particle + neon styling
+LinkeDIN aUTOMATION/
+├── 📄 main.py                     # Main application entry point
+├── 📄 scheduler.py                # Automated posting scheduler
+├── 📄 content_generator.py        # AI content generation
+├── 📄 linkedin_poster.py          # LinkedIn API integration
+├── 📄 test_setup.py              # Setup validation tests
+├── 📄 run_test.py                # Comprehensive testing
+├── 📄 simple_content_poster.py   # Manual posting helper
+├── 📄 get_linkedin_token.py      # OAuth token generator
+├── 📄 get_correct_user_id.py     # User ID finder
+├── 📄 fix_linkedin_permissions.py # Permission helper
+├── 📄 requirements.txt           # Python dependencies
+├── 📄 .env                       # Environment variables (secrets)
+├── 📄 config.json               # Configuration settings
+├── 📄 setup_guide.md            # Setup instructions
+└── 📄 README.md                 # This file
 ```
 
-## 🔐 Environment Variables (.env)
-Create `.env` in project root:
+## ✨ Features
+
+- 🤖 **AI Content Generation** - Creates professional LinkedIn posts
+- 🖼️ **AI Image Generation** - Creates relevant images using DALL-E 3
+- ⏰ **Automated Scheduling** - Posts at specified times/days
+- 🏷️ **Smart Hashtags** - Adds relevant hashtags automatically
+- 🔄 **Error Handling** - Robust fallback mechanisms
+- 🧪 **Testing Suite** - Comprehensive validation tools
+- 📊 **Multiple Topics** - Covers various professional subjects
+
+## 🚀 Quick Start
+
+1. **Install Dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Setup Environment**
+   - Configure your `.env` file with API credentials
+   - Customize `config.json` with your posting schedule
+
+3. **Test Setup**
+   ```bash
+   python test_setup.py
+   ```
+
+4. **Start Automation**
+   ```bash
+   python main.py --mode schedule
+   ```
+
+## 📋 Usage Commands
+
+```bash
+# Post immediately
+python main.py --mode post-now --topic "AI trends"
+
+# Post with AI-generated image
+python main.py --mode post-now --topic "AI trends" --with-image
+
+# Post without image (text only)
+python main.py --mode post-now --topic "AI trends" --no-image
+
+# Start scheduled automation
+python main.py --mode schedule
+
+# Test content generation with image
+python main.py --mode test --with-image
+
+# Generate batch content
+python simple_content_poster.py --batch 5
+
+# Run comprehensive tests
+python run_test.py
 ```
-OPENAI_API_KEY=sk-...
-LINKEDIN_ACCESS_TOKEN=your_linkedin_oauth_token
-LINKEDIN_USER_ID=your_numeric_or_profile_id
-LINKEDIN_PERSON_URN=urn:li:person:XXXXXXXX   # optional override
-```
-If `LINKEDIN_PERSON_URN` omitted, it auto-builds from `LINKEDIN_USER_ID`.
 
-## 🛠 Installation
-```powershell
-# Clone (replace YOUR_REPO)
-git clone https://github.com/YOUR_USERNAME/linkedin-automation.git
-cd linkedin-automation
+## ⚙️ Configuration
 
-# Create virtual env (Windows PowerShell)
-python -m venv .venv
-.\.venv\Scripts\activate
+### Environment Variables (.env)
+- `LINKEDIN_CLIENT_ID` - Your LinkedIn app client ID
+- `LINKEDIN_CLIENT_SECRET` - Your LinkedIn app secret
+- `LINKEDIN_ACCESS_TOKEN` - OAuth access token
+- `LINKEDIN_USER_ID` - Your LinkedIn user ID
+- `OPENAI_API_KEY` - OpenAI API key for content generation
 
-# Install deps
-pip install -r requirements.txt
-
-# Create .env
-notepad .env
-```
-
-## ⚙️ Config (`config.json`)
-Tune topics, length, hashtags, and image settings.
+### Schedule Configuration (config.json)
 ```json
 {
-  "content_topics": ["AI and Machine Learning", "Software Development Best Practices"],
-  "post_length": "medium",
-  "include_hashtags": true,
-  "max_hashtags": 5,
-  "include_images": true,
-  "image_size": "1024x1024",
-  "image_quality": "standard"
+    "post_schedule": [
+        {
+            "time": "09:00",
+            "days": ["monday", "wednesday", "friday"],
+            "topic": "technology trends"
+        }
+    ],
+    "content_topics": [...],
+    "post_length": "medium",
+    "include_hashtags": true,
+    "max_hashtags": 5
 }
 ```
 
-## 🖥 CLI Usage
-```powershell
-# 1. Test environment & sample generation
-python main.py --mode test --topic "AI and Machine Learning" --with-image
-
-# 2. Post immediately
-python main.py --mode post-now --topic "Career Growth Tips" --no-image
-
-# 3. Schedule via quick helper
-python main.py --mode schedule --topic "Industry Insights" --time "14:30" --with-image
-
-# 4. Advanced scheduler commands
-python schedule_post.py add --topic "Tech News" --time "2025-11-11 09:00"
-python schedule_post.py list
-python schedule_post.py start
-python schedule_post.py cancel --id JOB_ID
-python schedule_post.py quick --topic "AI Trends" --when in-1h
+### Image Generation Settings (config.json)
+```json
+{
+    "include_images": true,
+    "image_size": "1024x1024",
+    "image_quality": "standard"
+}
 ```
 
-## 🌐 Web Dashboard (Django)
-```powershell
-# Run dev server
-cd linkedin_Scheduler
-python manage.py migrate
-python manage.py runserver 0.0.0.0:8000
-```
-Open: http://localhost:8000
-Features:
-- Live stats (Scheduled / Completed / Failed)
-- Animated particle UI + realtime clock
-- Quick schedule buttons
-- Modal listing with edit / delete / reschedule actions
-- Resilient multi-path scheduling (direct scheduler → subprocess → JSON fallback)
+Available image sizes: `256x256`, `512x512`, `1024x1024`, `1792x1024`, `1024x1792`  
+Available qualities: `standard`, `hd`
 
-## 🖼 Image Generation Flow
-1. Build professional prompt based on topic + config
-2. Call DALL‑E 3 (size & quality from `config.json`)
-3. Download PNG to `generated_images/` with sanitized filename
-4. Attach media URN to post payload (Posts API) or fallback to UGC
+## 🖼️ Image Features
 
-## 🔄 Scheduler Mechanics
-- Background loop every 30s checks `scheduled_posts.json` mtime
-- Adds new posts dynamically without restart
-- Marks past scheduled entries as `expired`
-- Persists status transitions with timestamps
+- **AI-Generated Images**: Uses DALL-E 3 for professional business imagery
+- **Topic-Relevant**: Images match your post content and topic
+- **LinkedIn Optimized**: Professional style suitable for business social media
+- **Local Storage**: Images saved to `generated_images/` directory
+- **Fallback Support**: Posts as text-only if image generation fails
 
-## 🛡 Error Handling & Fallbacks
-| Layer | Primary | Fallback |
-|-------|---------|----------|
-| Text Generation | OpenAI Chat | Static template |
-| Hashtags | AI prompt | Topic-based static list |
-| Post API | Posts REST | UGC endpoint |
-| Scheduling | APScheduler job | Direct JSON append |
+## 🛠️ Troubleshooting
 
-## 📦 Dependencies (minimal)
-See `requirements.txt` – generated from imports.
+- **Token Problems**: Use `python get_linkedin_token.py`
+- **User ID Issues**: Run `python get_correct_user_id.py`
+- **Permission Errors**: Check `python fix_linkedin_permissions.py`
 
-## ✅ Quality Gates
-| Gate | Status |
-|------|--------|
-| Syntax (import compile) | PASS (core scripts parsed) |
-| Django start (requires env) | Pending user secrets |
-| External APIs | Requires valid tokens |
+## 📈 Status
 
-## 🛠 requirements.txt (generated)
-```
-openai
-python-dotenv
-requests
-APScheduler
-psutil
-Django>=5.2,<6.0
-```
-(Optional extras: `black`, `flake8`, `mypy` for dev.)
+✅ **Working Features:**
+- Content generation with OpenAI
+- AI image generation with DALL-E 3
+- LinkedIn API posting with images
+- Automated scheduling
+- Error handling and fallbacks
+- Comprehensive testing suite
 
-## 🙈 .gitignore Essentials
-```
-# Python
-__pycache__/
-*.py[cod]
-*.sqlite3
-.venv/
-.env
-*.log
+## 🔧 Technical Details
 
-# Images
-/generated_images/
+- **Python 3.7+** required
+- **LinkedIn API v2** integration
+- **OpenAI GPT-3.5** for content generation
+- **APScheduler** for automated posting
+- **Robust error handling** with multiple API fallbacks
 
-# Django
-staticfiles/
-media/
+## 🎯 Future Enhancements
 
-# OS / Editors
-*.DS_Store
-.vscode/
-```
-(Actual file added in repo.)
-
-## 🔧 GitHub Setup
-```powershell
-git init
-git add .
-git commit -m "feat: initial LinkedIn automation toolkit"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/linkedin-automation.git
-git push -u origin main
-```
-
-## 🎬 Suggested Demo Assets
-Create and add:
-- `assets/banner.gif` – animated gradient title
-- `assets/cli-demo.gif` – recording of scheduling & posting
-- `assets/dashboard.gif` – short screen capture of Django UI
-Update the banner URL near top once pushed.
-
-## 🔒 Disclaimer
-Use responsibly. Comply with LinkedIn Platform Terms. Excessive automation may violate TOS. Add human review for critical posts.
-
-## 📈 Future Enhancements
-- OAuth refresh flow & token auto-renew
-- Retry queue for failed posts
-- Redis / Postgres backend
-- Rich analytics (engagement, impressions, CTR)
-- WebSocket real-time updates
-
-## ❤️ Contributing
-PRs welcome. Open an issue for bugs or feature ideas.
-
-## 🤝 Connect & Support
-- Connect: <a href="https://www.linkedin.com/in/pawan941394/">LinkedIn @pawan941394</a>
-- Subscribe: <a href="https://www.youtube.com/@Pawankumar-py4tk">YouTube @Pawankumar-py4tk</a>
-- If this helped, ⭐ star the repo and share!
+- Image/media posting support
+- Analytics and engagement tracking
+- Content performance optimization
+- Multiple LinkedIn accounts support
+- Web dashboard interface
 
 ---
-<div align="center">
-Made with 💡, ⚙️ & ☕ — Automate your professional presence.
-<br/>
-<a href="https://www.linkedin.com/in/pawan941394/">LinkedIn</a> • <a href="https://www.youtube.com/@Pawankumar-py4tk">YouTube</a>
-</div>
+
+**Status: ✅ Production Ready**  
+**Last Updated: 2025**  
+**Author: Pawan Kumar**
