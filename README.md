@@ -46,13 +46,14 @@ A complete LinkedIn automation toolkit:
 
 ## Demo 
 
+## 1. 
 <img width="1142" height="851" alt="1" src="https://github.com/user-attachments/assets/feb82dab-6800-4b1f-8f89-2b4ab643c465" />
 
 
-
+## 2.
 <img width="1111" height="882" alt="2" src="https://github.com/user-attachments/assets/2854d808-a828-4d03-838e-4fc04a054591" />
 
-
+## 3.
 <img width="732" height="506" alt="3" src="https://github.com/user-attachments/assets/f73f2460-902b-4e7c-81ef-dbe66a8c8e0b" />
 
 
