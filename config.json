@@ -1,0 +1,27 @@
+{
+    "post_schedule": [
+        {
+            "time": "09:00",
+            "days": ["monday", "wednesday", "friday"],
+            "topic": "technology trends"
+        },
+        {
+            "time": "14:00",
+            "days": ["tuesday", "thursday"],
+            "topic": "professional development"
+        }
+    ],
+    "content_topics": [
+        "AI and Machine Learning",
+        "Software Development Best Practices",
+        "Career Growth Tips",
+        "Industry Insights",
+        "Tech News and Updates"
+    ],
+    "post_length": "medium",
+    "include_hashtags": true,
+    "max_hashtags": 5,
+    "include_images": true,
+    "image_size": "1024x1024",
+    "image_quality": "standard"
+}

@@ -1,0 +1,41 @@
+# Python cache & compiled
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Env & secrets
+.env
+*.env
+
+# Logs & runtime
+*.log
+logs/
+
+# Django artifacts
+*.sqlite3
+staticfiles/
+media/
+
+# Images generated
+/generated_images/
+
+# Editors / OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Temporary
+*.tmp
+*.bak
+
+# Coverage / testing
+.coverage
+.pytest_cache/
+
+# Jupyter (if later added)
+.ipynb_checkpoints/

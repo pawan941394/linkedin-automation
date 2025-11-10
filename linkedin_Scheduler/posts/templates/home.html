@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Automation Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'base.css' %}">
+
+</head>
+<body>
+    <!-- Animated Particles Background -->
+    <div class="particles"></div>
+
+    <div class="floating-elements">
+        <i class="fas fa-rocket floating-icon"></i>
+        <i class="fab fa-linkedin floating-icon"></i>
+        <i class="fas fa-clock floating-icon"></i>
+        <i class="fas fa-chart-line floating-icon"></i>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <i class="fab fa-linkedin"></i>
+                <div>
+                    <div class="title">LinkedIn Automation</div>
+                    <div class="subtitle">Schedule your professional posts with AI</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="clock-section">
+            <div class="current-time" id="currentTime">00:00:00</div>
+            <div class="current-date" id="currentDate">Loading...</div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="form-title">
+                <i class="fas fa-edit"></i>
+                Schedule New Post
+            </h2>
+
+            <form id="postForm" method="POST" action="{% url 'schedule_post' %}">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label class="form-label" for="topic">
+                        <i class="fas fa-lightbulb"></i> Post Topic
+                    </label>
+                    <input 
+                        type="text" 
+                        id="topic" 
+                        name="topic" 
+                        class="form-input"
+                        placeholder="e.g., AI and Machine Learning trends, Career development tips..."
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="content">
+                        <i class="fas fa-pen-fancy"></i> Custom Content (Optional)
+                    </label>
+                    <textarea 
+                        id="content" 
+                        name="content" 
+                        class="form-textarea"
+                        placeholder="Leave empty to auto-generate content with AI, or write your custom post here..."
+                    ></textarea>
+                </div>
+
+                <div class="datetime-group">
+                    <div class="form-group">
+                        <label class="form-label" for="schedule_date">
+                            <i class="fas fa-calendar"></i> Schedule Date
+                        </label>
+                        <input 
+                            type="date" 
+                            id="schedule_date" 
+                            name="schedule_date" 
+                            class="form-input"
+                            required
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="schedule_time">
+                            <i class="fas fa-clock"></i> Schedule Time
+                        </label>
+                        <input 
+                            type="time" 
+                            id="schedule_time" 
+                            name="schedule_time" 
+                            class="form-input"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-magic"></i> Quick Schedule
+                    </label>
+                    <div class="quick-schedule">
+                        <div class="quick-btn" data-time="now">
+                            <i class="fas fa-play"></i><br>Now
+                        </div>
+                        <div class="quick-btn" data-time="1hour">
+                            <i class="fas fa-clock"></i><br>In 1 Hour
+                        </div>
+                        <div class="quick-btn" data-time="tomorrow">
+                            <i class="fas fa-sun"></i><br>Tomorrow 9AM
+                        </div>
+                        <div class="quick-btn" data-time="nextweek">
+                            <i class="fas fa-calendar-week"></i><br>Next Week
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-rocket"></i>
+                    Schedule LinkedIn Post
+                </button>
+            </form>
+        </div>
+
+        <!-- Success/Error Messages -->
+        {% if messages %}
+            <div class="messages-section">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon scheduled">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-number">{{ scheduled_count|default:0 }}</div>
+                <div class="stat-label">Scheduled Posts</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon completed">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-number">{{ completed_count|default:0 }}</div>
+                <div class="stat-label">Completed Posts</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon failed">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="stat-number">{{ failed_count|default:0 }}</div>
+                <div class="stat-label">Failed Posts</div>
+            </div>
+        </div>
+
+        <!-- View Scheduled Posts Button -->
+        <div style="text-align: center;">
+            <button class="view-posts-btn" onclick="openPostsModal()">
+                <i class="fas fa-list"></i>
+                View Scheduled Posts
+            </button>
+        </div>
+    </div>
+
+    <!-- Posts Modal -->
+    <div id="postsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    Scheduled Posts
+                </h2>
+                <span class="close" onclick="closePostsModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Loading scheduled posts...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create animated particles
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                
+                // Random colors
+                const colors = ['rgba(120, 119, 198, 0.6)', 'rgba(255, 119, 198, 0.4)', 'rgba(120, 219, 226, 0.5)'];
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Initialize particles
+        createParticles();
+
+        // Real-time clock
+        function updateClock() {
+            const now = new Date();
+            
+            const timeString = now.toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            const dateString = now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            document.getElementById('currentTime').textContent = timeString;
+            document.getElementById('currentDate').textContent = dateString;
+        }
+
+        // Update clock every second
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Set default date and time
+        function setDefaultDateTime() {
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            const currentTime = now.toTimeString().split(' ')[0].slice(0, 5);
+            
+            document.getElementById('schedule_date').value = today;
+            document.getElementById('schedule_time').value = currentTime;
+        }
+
+        setDefaultDateTime();
+
+        // Quick schedule buttons
+        document.querySelectorAll('.quick-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                const timeType = this.getAttribute('data-time');
+                const now = new Date();
+                let scheduleDate, scheduleTime;
+                
+                switch(timeType) {
+                    case 'now':
+                        now.setMinutes(now.getMinutes() + 2); // 2 minutes from now
+                        scheduleDate = now.toISOString().split('T')[0];
+                        scheduleTime = now.toTimeString().split(' ')[0].slice(0, 5);
+                        break;
+                    case '1hour':
+                        now.setHours(now.getHours() + 1);
+                        scheduleDate = now.toISOString().split('T')[0];
+                        scheduleTime = now.toTimeString().split(' ')[0].slice(0, 5);
+                        break;
+                    case 'tomorrow':
+                        now.setDate(now.getDate() + 1);
+                        scheduleDate = now.toISOString().split('T')[0];
+                        scheduleTime = '09:00';
+                        break;
+                    case 'nextweek':
+                        now.setDate(now.getDate() + 7);
+                        scheduleDate = now.toISOString().split('T')[0];
+                        scheduleTime = '09:00';
+                        break;
+                }
+                
+                document.getElementById('schedule_date').value = scheduleDate;
+                document.getElementById('schedule_time').value = scheduleTime;
+            });
+        });
+
+        // Form validation and submission
+        document.getElementById('postForm').addEventListener('submit', function(e) {
+            const topic = document.getElementById('topic').value.trim();
+            const scheduleDate = document.getElementById('schedule_date').value;
+            const scheduleTime = document.getElementById('schedule_time').value;
+            
+            if (!topic || !scheduleDate || !scheduleTime) {
+                e.preventDefault();
+                alert('Please fill in all required fields!');
+                return;
+            }
+            
+            // Check if scheduled time is in the future
+            const scheduledDateTime = new Date(scheduleDate + 'T' + scheduleTime);
+            const now = new Date();
+            
+            if (scheduledDateTime <= now) {
+                e.preventDefault();
+                alert('Please schedule the post for a future time!');
+                return;
+            }
+            
+            // Add loading state to button
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scheduling...';
+            submitBtn.disabled = true;
+        });
+
+        // Auto-resize textarea
+        document.getElementById('content').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Smooth scrolling for better UX
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Modal Functions
+        function openPostsModal() {
+            document.getElementById('postsModal').style.display = 'block';
+            loadScheduledPosts();
+        }
+
+        function closePostsModal() {
+            document.getElementById('postsModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('postsModal');
+            if (event.target === modal) {
+                closePostsModal();
+            }
+        }
+
+        // Load scheduled posts via API
+        async function loadScheduledPosts() {
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Loading scheduled posts...</div>';
+
+            try {
+                const response = await fetch('/api/posts/');
+                const data = await response.json();
+
+                if (data.error) {
+                    modalBody.innerHTML = `<div class="no-posts">Error loading posts: ${data.error}</div>`;
+                    return;
+                }
+
+                if (!data.posts || data.posts.length === 0) {
+                    modalBody.innerHTML = '<div class="no-posts"><i class="fas fa-calendar-times"></i><br><br>No scheduled posts found.</div>';
+                    return;
+                }
+
+                // Render posts
+                modalBody.innerHTML = data.posts.map(post => createPostHTML(post)).join('');
+
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                modalBody.innerHTML = '<div class="no-posts">Error loading posts. Please try again.</div>';
+            }
+        }
+
+        function createPostHTML(post) {
+            const scheduleDate = new Date(post.schedule_time);
+            const now = new Date();
+            const isUpcoming = scheduleDate > now;
+            const status = post.status || 'scheduled';
+            
+            let timeInfo = '';
+            let statusClass = 'status-scheduled';
+            let statusText = 'Scheduled';
+            let actions = '';
+            
+            if (status === 'completed') {
+                statusClass = 'status-completed';
+                statusText = 'Completed';
+                const completedAt = post.completed_at ? new Date(post.completed_at) : null;
+                timeInfo = completedAt ? 
+                    `<div class="time-remaining">✅ Posted on ${completedAt.toLocaleString()}</div>` :
+                    '<div class="time-remaining">✅ Posted successfully</div>';
+                actions = `
+                    <button class="btn-delete" onclick="deletePost('${post.id}')">
+                        <i class="fas fa-trash"></i>
+                        Remove from History
+                    </button>
+                `;
+            } else if (status === 'failed' || status === 'error') {
+                statusClass = 'status-failed';
+                statusText = 'Failed';
+                timeInfo = '<div class="time-remaining">❌ Failed to post</div>';
+                actions = `
+                    <button class="btn-delete" onclick="deletePost('${post.id}')">
+                        <i class="fas fa-trash"></i>
+                        Remove
+                    </button>
+                    <button class="btn-edit" onclick="reschedulePost('${post.id}')">
+                        <i class="fas fa-redo"></i>
+                        Reschedule
+                    </button>
+                `;
+            } else if (status === 'expired') {
+                statusClass = 'status-failed';
+                statusText = 'Expired';
+                timeInfo = '<div class="time-remaining">⏰ Time passed</div>';
+                actions = `
+                    <button class="btn-delete" onclick="deletePost('${post.id}')">
+                        <i class="fas fa-trash"></i>
+                        Remove
+                    </button>
+                    <button class="btn-edit" onclick="reschedulePost('${post.id}')">
+                        <i class="fas fa-calendar-plus"></i>
+                        Reschedule
+                    </button>
+                `;
+            } else {
+                // Scheduled posts
+                timeInfo = isUpcoming ? 
+                    `<div class="time-remaining">⏰ ${post.time_remaining}</div>` : 
+                    '<div class="time-remaining">⏰ Past due</div>';
+                actions = `
+                    <button class="btn-delete" onclick="deletePost('${post.id}')">
+                        <i class="fas fa-trash"></i>
+                        Delete
+                    </button>
+                    <button class="btn-edit" onclick="editPost('${post.id}')">
+                        <i class="fas fa-edit"></i>
+                        Edit Time
+                    </button>
+                `;
+            }
+
+            return `
+                <div class="post-item ${status === 'completed' ? 'post-completed' : status === 'failed' || status === 'error' || status === 'expired' ? 'post-failed' : ''}">
+                    <div class="post-header">
+                        <div style="flex: 1;">
+                            <div class="post-topic">${escapeHtml(post.topic)}</div>
+                            <div class="post-time">📅 ${scheduleDate.toLocaleString()}</div>
+                            ${timeInfo}
+                        </div>
+                        <span class="post-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="post-actions">
+                        ${actions}
+                    </div>
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Delete post function
+        async function deletePost(postId) {
+            if (!confirm('Are you sure you want to delete this scheduled post?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/delete-post/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ post_id: postId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Refresh the posts list
+                    loadScheduledPosts();
+                    
+                    // Update stats
+                    updateStats();
+                    
+                    // Show success message
+                    showNotification('Post deleted successfully!', 'success');
+                } else {
+                    showNotification('Error deleting post: ' + (data.error || 'Unknown error'), 'error');
+                }
+
+            } catch (error) {
+                console.error('Error deleting post:', error);
+                showNotification('Error deleting post. Please try again.', 'error');
+            }
+        }
+
+        // Edit post function (simple time change)
+        function editPost(postId) {
+            const newTime = prompt('Enter new schedule time (YYYY-MM-DD HH:MM):');
+            if (!newTime) return;
+
+            // Validate time format
+            const timeRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
+            if (!timeRegex.test(newTime)) {
+                alert('Invalid time format. Please use: YYYY-MM-DD HH:MM');
+                return;
+            }
+
+            // Check if time is in future
+            const scheduleTime = new Date(newTime);
+            if (scheduleTime <= new Date()) {
+                alert('Please select a future time!');
+                return;
+            }
+
+            updatePostTime(postId, newTime);
+        }
+
+        async function updatePostTime(postId, newTime) {
+            try {
+                const response = await fetch('/api/update-post/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ 
+                        post_id: postId,
+                        new_time: newTime
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    loadScheduledPosts();
+                    showNotification('Post time updated successfully!', 'success');
+                } else {
+                    showNotification('Error updating post: ' + (data.error || 'Unknown error'), 'error');
+                }
+
+            } catch (error) {
+                console.error('Error updating post:', error);
+                showNotification('Error updating post. Please try again.', 'error');
+            }
+        }
+
+        // Reschedule function for failed/expired posts
+        function reschedulePost(postId) {
+            const newTime = prompt('Enter new schedule time (YYYY-MM-DD HH:MM):');
+            if (!newTime) return;
+
+            // Validate time format
+            const timeRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
+            if (!timeRegex.test(newTime)) {
+                alert('Invalid time format. Please use: YYYY-MM-DD HH:MM');
+                return;
+            }
+
+            // Check if time is in future
+            const scheduleTime = new Date(newTime);
+            if (scheduleTime <= new Date()) {
+                alert('Please select a future time!');
+                return;
+            }
+
+            reschedulePostTime(postId, newTime);
+        }
+
+        async function reschedulePostTime(postId, newTime) {
+            try {
+                const response = await fetch('/api/reschedule-post/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({ 
+                        post_id: postId,
+                        new_time: newTime
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    loadScheduledPosts();
+                    updateStats();
+                    showNotification('Post rescheduled successfully!', 'success');
+                } else {
+                    showNotification('Error rescheduling post: ' + (data.error || 'Unknown error'), 'error');
+                }
+
+            } catch (error) {
+                console.error('Error rescheduling post:', error);
+                showNotification('Error rescheduling post. Please try again.', 'error');
+            }
+        }
+
+        // Update statistics
+        async function updateStats() {
+            try {
+                const response = await fetch('/api/stats/');
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.querySelector('.stat-card .stat-number').textContent = data.scheduled_count || 0;
+                    document.querySelectorAll('.stat-card .stat-number')[1].textContent = data.completed_count || 0;
+                    document.querySelectorAll('.stat-card .stat-number')[2].textContent = data.failed_count || 0;
+                }
+            } catch (error) {
+                console.error('Error updating stats:', error);
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type}`;
+            notification.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                ${message}
+            `;
+
+            // Insert before stats section
+            const statsSection = document.querySelector('.stats-section');
+            statsSection.parentNode.insertBefore(notification, statsSection);
+
+            // Remove after 5 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closePostsModal();
+            }
+        });
+    </script>
+</body>
+</html>

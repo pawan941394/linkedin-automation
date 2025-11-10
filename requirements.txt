@@ -1,0 +1,6 @@
+openai
+python-dotenv
+requests
+APScheduler
+psutil
+Django>=5.2,<6.0
